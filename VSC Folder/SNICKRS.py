@@ -90,11 +90,9 @@ def save_data(data):
     )
     TopFrame_DataFrame.loc[row_index] = top_frame_dict
     BottomFrame_DataFrame.loc[row_index] = bottom_frame_dict
-    print(BottomFrame_DataFrame)
-    print(bottom_frame_dict)
 
     TopFrame_DataFrame.to_csv("TopFrame.txt", index=False, mode="w")
-    BottomFrame_DataFrame.to_csv("BottomFrame.txt", index=False, mode="w")
+    BottomFrame_DataFrame.to_csv("Bottom_Frame.txt", index=False, mode="w")
 
 
 def add_cow(calf_num, mama_num, dob):
