@@ -1,0 +1,4 @@
+Number,Tatoo Number,bday,Holstein%,Monte. %,Swedish Red %,GrGrGrDam,GrGrDam,GrDam,Dam,GrGrGrSire,GrGrSire,GrSire,Sire,VS6+SOM,COVENIX,VS6+VLS,EndovacD,Calfhood,Notes
+415,43TPA3551,10/1/2020,19.0,56.0,25.0,985.0,169.0,701,248,Magma,HBull,Timber,Mauleon,1-6-21,1-6-21,2-27-21,3-16-21,3-30-21,
+619,43tks7817,10/30/2010,50.0,50.0,0.0,,,22,265,,,Kurt,Thimus,,,,,,
+957,,10/17/2023,,,,,22,265,619,,Kurt,Thimus,A/Cochise,,,,,,
