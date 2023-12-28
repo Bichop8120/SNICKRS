@@ -208,11 +208,7 @@ class Snickr_Sheet:
             if label.cget("text") == target_label.cget("text"):
                 return i
         return -1
-
-    def close_window(self, event):
-        SN.save_data(self.labels_list)
-        self.root.destroy()
-
+    
     def label_clicked(self, event):
         self.selected_label = event.widget
 
@@ -231,6 +227,10 @@ class Snickr_Sheet:
 
         self.selected_label = None
 
+    def close_window(self, event):
+        SN.save_data(self.labels_list)
+        self.root.destroy()
+
 
 class Main_Menu:
     def __init__(self):
@@ -247,7 +247,7 @@ class Main_Menu:
             Snickr_Sheet_init()
 
         self.root = customtkinter.CTk()
-        self.root.geometry("400x300")
+        self.root.geometry("1000x800")
         self.root.title("Main Menu")
         self.mainframe = customtkinter.CTkFrame(self.root, fg_color="black")
         self.mainframe.pack(fill="both", expand=True)
@@ -289,6 +289,8 @@ class Main_Menu:
             placeholder_text="Date of Birth",
         )
 
+        calendar = Calendar(self.mainframe)
+        
         dob_entry.insert(0, dt.datetime.now().strftime("%m/%d/%Y"))
 
         calf_entry.place(x=200, y=100)
@@ -306,7 +308,30 @@ class Main_Menu:
         new_cow_button.place(x=200, y=0)
 
         self.root.mainloop()
+    def get_label_index(self, target_label):
+        for i, label in enumerate(self.labels_list):
+            if label.cget("text") == target_label.cget("text"):
+                return i
+        return -1
+    
+    def label_clicked(self, event):
+        self.selected_label = event.widget
 
+    def update_data(self):
+        index = self.get_label_index(self.selected_label)
+        new_data = self.edit_entry.get()
+        old_data = self.selected_label.cget("text")
+        if "\n" in old_data:
+            old_data = old_data.split("\n")[0]
+            self.selected_label.config(text=f"{old_data}\n{new_data}")
+        else:
+            self.selected_label.config(text=f"{new_data}")
+
+        self.labels_list.insert(index, self.selected_label)
+        self.labels_list.pop(index + 1)
+
+        self.selected_label = None
+        
     def close_window(self, event):
         self.root.destroy()
 
@@ -606,7 +631,7 @@ class MilkCycleFrame:
                 width=(self.frame.cget("width") * 0.045),
                 height=70,
                 fg_color="white",
-                text=f"{result[i]}\n{result[i + 1]}\n",
+                text=f"{result[i]}\n{result[i + 1]}",
                 font=("Arial", 18),
             )
             month_label.grid(row=1, column=int((i)) + 1)
@@ -639,5 +664,26 @@ class EditFrame:
         snickrs_instance.edit_entry = self.Edit_Entry
 
 
+class Calendar:
+    def __init__(self, parent):
+        self.frame = customtkinter.CTkFrame(parent, width=800, height=600, fg_color="Blue")
+        self.day_frame = customtkinter.CTkFrame(self.frame, width=800, height=500, fg_color="Black")
+
+        self.month = "December"
+
+        self.month_label = customtkinter.CTkLabel(self.frame, width=800, height=75, fg_color="Orange", text=self.month)
+
+        for i in range(1, 32):
+            row = (i - 1) // 7
+            column = (i - 1) % 7
+
+            label = customtkinter.CTkLabel(self.day_frame, width=(800 / 7), height=100, text=f"Day {i}", fg_color="white")
+            label.grid(row=row, column=column)
+
+        self.frame.place(x=200, y=200)
+        self.month_label.place(x=0, y=0)
+        self.day_frame.place(x=0, y=75)
+        
+        
 if __name__ == "__main__":
     Main_Menu()
