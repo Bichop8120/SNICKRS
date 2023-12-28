@@ -241,5 +241,34 @@ def mama_breeding_list(mama_num):
     mama_data = [str(i) for i in mama_data]
     return mama_data
 
+def get_herd(season, year=None, cow=None):
+    if year:
+        spring = ['1', '2', '3', '4', '5', '6']
+        fall = ['7', '8', '9', '10', '11', '12']
+        dates = dict(zip(list(TopFrame_DataFrame["Number"]), list(TopFrame_DataFrame["bday"])))
+        year_calves = {num: date for num, date in dates.items() if int(date[-4:]) == year}
 
-find_cow(619)
+        if season == "spring":
+            spring_calves = [(num, date) for num, date in year_calves.items() if date[:2] in spring]
+            return spring_calves
+        else:
+            fall_calves = [(num, date) for num, date in year_calves.items() if date[:2] in fall]
+            return fall_calves
+
+    elif cow:
+        cow_year = int(TopFrame_DataFrame.query(f"(Number == {cow})")["bday"].iloc[0][-4:])
+        
+        spring = ['1', '2', '3', '4', '5', '6']
+        fall = ['7', '8', '9', '10', '11', '12']
+        dates = dict(zip(list(TopFrame_DataFrame["Number"]), list(TopFrame_DataFrame["bday"])))
+        year_calves = {num: date for num, date in dates.items() if int(date[-4:]) == cow_year}
+        
+        if season == "spring":
+            spring_calves = [(num, date) for num, date in year_calves.items() if date[:2] in spring]
+            return spring_calves
+        else:
+            fall_calves = [(num, date) for num, date in year_calves.items() if date[:2] in fall]
+            return fall_calves
+        
+    else:
+        print("Please enter a year or cow number")
