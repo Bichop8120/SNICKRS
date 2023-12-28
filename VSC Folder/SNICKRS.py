@@ -1,10 +1,8 @@
 import pandas as pd
+import numpy as np
 
-TopFrame_DataFrame = pd.read_csv("TopFrame.txt")
-BottomFrame_DataFrame = pd.read_csv("Bottom_Frame.txt")
-
-TopFrame_DataFrame.fillna("", inplace=True)
-BottomFrame_DataFrame.fillna("", inplace=True)
+TopFrame_DataFrame = pd.read_csv("SNICKRS-main\TopFrame.txt")
+BottomFrame_DataFrame = pd.read_csv("SNICKRS-main\Bottom_Frame.txt")
 
 
 # Function to autofill the months
@@ -25,36 +23,54 @@ def autofill_months(data):
     ]
     last_month = None
 
-    for i in range(len(data)):
-        if i % 2 == 0:  # we're on a month entry
-            if data[i]:  # if the entry is not an empty string
-                last_month = data[i]
-            else:
-                next_month_index = (months.index(last_month) + 1) % 12
-                data[i] = months[next_month_index]
-                last_month = months[next_month_index]
-    return data
+    try:
+        for i in range(len(data)):
+            if i % 2 == 0:  # we're on a month entry
+                if data[i]:  # if the entry is not an empty string
+                    last_month = data[i]
+                else:
+                    next_month_index = (months.index(last_month) + 1) % 12
+                    data[i] = months[next_month_index]
+                    last_month = months[next_month_index]
+        return data
+    except:
+        return data
 
 
 def find_cow(cow):
+    
     data = list((TopFrame_DataFrame.query(f"(Number == {cow})").iloc[0]))
     data.append(list((BottomFrame_DataFrame.query(f"(Number == {cow})").iloc[0])))
+
+    data[-1][11:55] = autofill_months(data[-1][11:55])
+    data[-1][65:109] = autofill_months(data[-1][65:109])
+    data[-1][119:163] = autofill_months(data[-1][119:163])
+    data[-1][173:217] = autofill_months(data[-1][173:217])
+    data[-1][227:271] = autofill_months(data[-1][227:271])
+    data[-1][281:325] = autofill_months(data[-1][281:325])
+    data[-1][335:379] = autofill_months(data[-1][335:379])
+    data[-1][389:433] = autofill_months(data[-1][389:433])
+    data[-1][443:487] = autofill_months(data[-1][443:487])
+    data[-1][497:541] = autofill_months(data[-1][497:541])
+    data[-1][551:595] = autofill_months(data[-1][551:595])
+
     return data
 
 
 def save_data(data):
     data_values = [item.cget("text") for item in data]
-    BottomFrame_DataFrame = pd.read_csv("Bottom_Frame.txt")
-    TopFrame_DataFrame = pd.read_csv("TopFrame.txt")
 
     top_frame = data_values[:19]
     bottom_frame = data_values[19:]
 
     clean_top_frame = [str(i).split("\n")[-1] for i in top_frame]
+    clean_top_frame.append(top_frame[-1])
+    
+    
     bottom_frame.insert(0, clean_top_frame[0])
 
     clean_bottom_frame = [[str(i).split("\n")[-1]] for i in bottom_frame[1:11]]
-    clean_bottom_frame += [str(i).split("\n") for i in bottom_frame[11:33]]
+    clean_bottom_frame += [float(str(i).split("\n")) for i in bottom_frame[11:33]]
     clean_bottom_frame += [[str(i).split("\n")[-1]] for i in bottom_frame[33:43]]
     clean_bottom_frame += [str(i).split("\n") for i in bottom_frame[43:65]]
     clean_bottom_frame += [[str(i).split("\n")[-1]] for i in bottom_frame[65:75]]
@@ -78,22 +94,19 @@ def save_data(data):
 
     clean_bottom_frame = [item for sublist in clean_bottom_frame for item in sublist]
     clean_bottom_frame.insert(0, clean_top_frame[0])
-    bottom_frame_dict = dict(
-        zip(list(BottomFrame_DataFrame.columns), clean_bottom_frame)
-    )
-    top_frame_dict = dict(zip(list(TopFrame_DataFrame.columns), clean_top_frame))
+    
 
-    row_index = (
-        BottomFrame_DataFrame.query(f"(Number == {clean_top_frame[0]})").index[0]
-        if clean_top_frame[0] in list(BottomFrame_DataFrame["Number"])
-        else len(BottomFrame_DataFrame.index)
-    )
-    TopFrame_DataFrame.loc[row_index] = top_frame_dict
-    BottomFrame_DataFrame.loc[row_index] = bottom_frame_dict
-
-    TopFrame_DataFrame.to_csv("TopFrame.txt", index=False, mode="w")
-    BottomFrame_DataFrame.to_csv("Bottom_Frame.txt", index=False, mode="w")
-
+    BottomFrame_DataFrame.loc[
+        BottomFrame_DataFrame["Number"] == int(clean_top_frame[0]), :
+    ] = clean_bottom_frame
+        
+    TopFrame_DataFrame.loc[
+        TopFrame_DataFrame["Number"] == int(clean_top_frame[0]), :
+    ] = clean_top_frame
+    
+    TopFrame_DataFrame.to_csv("SNICKRS-main\TopFrame.txt", index=False)
+    BottomFrame_DataFrame.to_csv("SNICKRS-main\Bottom_Frame.txt", index=False)
+    
 
 def add_cow(calf_num, mama_num, dob):
     calf_num = int(calf_num)
@@ -227,3 +240,6 @@ def mama_breeding_list(mama_num):
     ]
     mama_data = [str(i) for i in mama_data]
     return mama_data
+
+
+find_cow(619)
